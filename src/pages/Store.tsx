@@ -58,7 +58,7 @@ const navLinks = [
   { label: 'Магазин', href: '/store', icon: 'ShoppingCart', active: true },
   { label: 'Сервера', href: '#', icon: 'Server' },
   { label: 'Помощь', href: '#', icon: 'HelpCircle' },
-  { label: 'Бан-лист', href: '#', icon: 'Ban' },
+
 ]
 
 type FullProduct = Product & { category: string }
