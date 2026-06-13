@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Icon from '@/components/ui/icon'
 
 interface Product {
@@ -61,11 +61,31 @@ const navLinks = [
   { label: 'Бан-лист', href: '#', icon: 'Ban' },
 ]
 
+type FullProduct = Product & { category: string }
+
 export default function Store() {
   const [activeCategory, setActiveCategory] = useState('Моды X5')
   const [filterOpen, setFilterOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<FullProduct | null>(null)
+  const [quantity, setQuantity] = useState(1)
 
   const filtered = allProducts.filter(p => p.category === activeCategory)
+
+  useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [selectedProduct])
+
+  const openModal = (product: FullProduct) => {
+    setSelectedProduct(product)
+    setQuantity(1)
+  }
+
+  const closeModal = () => setSelectedProduct(null)
 
   return (
     <div
@@ -218,6 +238,7 @@ export default function Store() {
           {filtered.map(product => (
             <div
               key={product.id}
+              onClick={() => openModal(product)}
               className="relative cursor-pointer group border-r border-b transition-all"
               style={{ borderColor: '#2a2a2a', backgroundColor: '#141414' }}
             >
@@ -280,6 +301,124 @@ export default function Store() {
           ))}
         </div>
       </div>
+
+      {/* MODAL */}
+      {selectedProduct && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+          onClick={closeModal}
+        >
+          <div
+            className="relative w-full max-w-md rounded-2xl overflow-hidden"
+            style={{ backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              style={{ backgroundColor: '#2a2a2a', color: '#9ca3af' }}
+            >
+              <Icon name="X" size={16} />
+            </button>
+
+            {/* Image */}
+            <div
+              className="flex items-center justify-center py-10"
+              style={{ backgroundColor: '#111', borderBottom: '1px solid #2a2a2a' }}
+            >
+              {selectedProduct.discount && (
+                <div
+                  className="absolute top-4 left-4 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
+                  style={{ backgroundColor: '#16a34a', color: '#fff' }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-300" />
+                  {selectedProduct.discount}%
+                </div>
+              )}
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.name}
+                className="w-40 h-40 object-contain"
+              />
+            </div>
+
+            {/* Info */}
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-1" style={{ color: '#f9fafb' }}>
+                {selectedProduct.name}
+              </h3>
+              <p className="text-sm mb-4" style={{ color: '#6b7280' }}>
+                {selectedProduct.category}
+              </p>
+
+              {/* Price row */}
+              <div className="flex items-center gap-3 mb-6">
+                {selectedProduct.oldPrice && (
+                  <span className="text-base line-through" style={{ color: '#4b5563' }}>
+                    {selectedProduct.oldPrice} ◆
+                  </span>
+                )}
+                <span className="text-2xl font-black flex items-center gap-1.5" style={{ color: '#f9fafb' }}>
+                  {selectedProduct.pricePrefix && (
+                    <span className="text-sm font-normal" style={{ color: '#6b7280' }}>
+                      {selectedProduct.pricePrefix}
+                    </span>
+                  )}
+                  {selectedProduct.price * quantity}
+                  <span
+                    className="w-5 h-5 rounded-full inline-flex items-center justify-center text-[10px] font-bold"
+                    style={{ backgroundColor: '#6366f1', color: '#fff' }}
+                  >
+                    ◆
+                  </span>
+                </span>
+              </div>
+
+              {/* Quantity */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-sm" style={{ color: '#6b7280' }}>Количество:</span>
+                <div
+                  className="flex items-center rounded-lg overflow-hidden"
+                  style={{ border: '1px solid #2a2a2a' }}
+                >
+                  <button
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="w-9 h-9 flex items-center justify-center transition-colors hover:bg-white/5"
+                    style={{ color: '#9ca3af' }}
+                  >
+                    <Icon name="Minus" size={14} />
+                  </button>
+                  <span className="w-10 text-center text-sm font-bold" style={{ color: '#f9fafb' }}>
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(q => q + 1)}
+                    className="w-9 h-9 flex items-center justify-center transition-colors hover:bg-white/5"
+                    style={{ color: '#9ca3af' }}
+                  >
+                    <Icon name="Plus" size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Buy button */}
+              <button
+                className="w-full py-3 rounded-xl font-bold text-base transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
+                style={{ backgroundColor: '#14b8a6', color: '#fff' }}
+              >
+                <Icon name="ShoppingCart" size={18} />
+                Купить за {selectedProduct.price * quantity} ◆
+              </button>
+
+              <p className="text-xs text-center mt-3" style={{ color: '#4b5563' }}>
+                Товар выдаётся мгновенно после оплаты
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
