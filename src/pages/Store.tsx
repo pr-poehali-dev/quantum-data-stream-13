@@ -68,6 +68,7 @@ export default function Store() {
   const [filterOpen, setFilterOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<FullProduct | null>(null)
   const [quantity, setQuantity] = useState(1)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const filtered = allProducts.filter(p => p.category === activeCategory)
 
@@ -83,6 +84,7 @@ export default function Store() {
   const openModal = (product: FullProduct) => {
     setSelectedProduct(product)
     setQuantity(1)
+    setShowSuccess(false)
   }
 
   const closeModal = () => setSelectedProduct(null)
@@ -405,6 +407,7 @@ export default function Store() {
 
               {/* Buy button */}
               <button
+                onClick={() => setShowSuccess(true)}
                 className="w-full py-3 rounded-xl font-bold text-base transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
                 style={{ backgroundColor: '#14b8a6', color: '#fff' }}
               >
@@ -412,9 +415,28 @@ export default function Store() {
                 Купить за {selectedProduct.price * quantity} ◆
               </button>
 
-              <p className="text-xs text-center mt-3" style={{ color: '#4b5563' }}>
-                Товар выдаётся мгновенно после оплаты
-              </p>
+              {showSuccess && (
+                <div
+                  className="mt-4 p-4 rounded-xl flex items-start gap-3"
+                  style={{ backgroundColor: 'rgba(20,184,166,0.1)', border: '1px solid rgba(20,184,166,0.3)' }}
+                >
+                  <Icon name="Info" size={16} className="mt-0.5 shrink-0" style={{ color: '#14b8a6' }} />
+                  <div>
+                    <p className="text-sm font-semibold mb-0.5" style={{ color: '#14b8a6' }}>
+                      Оплата временно недоступна
+                    </p>
+                    <p className="text-xs" style={{ color: '#6b7280' }}>
+                      Магазин скоро откроется. Следите за обновлениями в нашем Discord и Telegram.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {!showSuccess && (
+                <p className="text-xs text-center mt-3" style={{ color: '#4b5563' }}>
+                  Товар выдаётся мгновенно после оплаты
+                </p>
+              )}
             </div>
           </div>
         </div>
