@@ -1,309 +1,285 @@
 import { useState } from 'react'
 import Icon from '@/components/ui/icon'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 
-interface Privilege {
+interface Product {
   id: string
   name: string
   price: number
   oldPrice?: number
-  color: string
-  glowColor: string
-  icon: string
-  badge?: string
-  features: string[]
+  image: string
+  discount?: number
+  currency?: 'coins' | 'gems'
+  pricePrefix?: string
 }
 
-const privileges: Privilege[] = [
-  {
-    id: 'vip',
-    name: 'VIP',
-    price: 199,
-    color: '#4ade80',
-    glowColor: 'rgba(74, 222, 128, 0.3)',
-    icon: 'Shield',
-    features: [
-      'Приоритетный вход на сервер',
-      'Префикс [VIP] в чате',
-      'x1.5 множитель добычи',
-      '2 дома (команда /home)',
-      'Телепорт к друзьям',
-      'Доступ к /kit vip каждые 24ч',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'PREMIUM',
-    price: 399,
-    oldPrice: 499,
-    color: '#60a5fa',
-    glowColor: 'rgba(96, 165, 250, 0.3)',
-    icon: 'Star',
-    badge: 'Популярный',
-    features: [
-      'Всё из VIP',
-      'Префикс [PREMIUM] в чате',
-      'x2 множитель добычи',
-      '5 домов (команда /home)',
-      'Телепорт без задержки',
-      '/kit premium каждые 12ч',
-      'Автопочинка брони',
-      'Скин на любое оружие',
-    ],
-  },
-  {
-    id: 'elite',
-    name: 'ELITE',
-    price: 799,
-    color: '#f59e0b',
-    glowColor: 'rgba(245, 158, 11, 0.4)',
-    icon: 'Crown',
-    badge: 'Топ',
-    features: [
-      'Всё из PREMIUM',
-      'Префикс [ELITE] золотом',
-      'x3 множитель добычи',
-      '10 домов (команда /home)',
-      'Мгновенный телепорт',
-      '/kit elite каждые 6ч',
-      'Личный магазин (/shop)',
-      'Защита базы от гридинга',
-      'VIP-слот навсегда',
-    ],
-  },
-  {
-    id: 'god',
-    name: 'GOD',
-    price: 1499,
-    color: '#FF4D00',
-    glowColor: 'rgba(255, 77, 0, 0.4)',
-    icon: 'Flame',
-    badge: 'Легенда',
-    features: [
-      'Всё из ELITE',
-      'Префикс [GOD] с анимацией',
-      'x5 множитель добычи',
-      'Неограниченные дома',
-      '/fly — полёт на сервере',
-      '/kit god каждые 3ч',
-      'Команда /heal',
-      'Невидимость (/vanish)',
-      'Никнейм любого цвета',
-      'Персональная команда /tpa',
-    ],
-  },
+const categories = ['Моды X5', 'Привилегии', 'Предметы', 'Оружие', 'Расходники']
+
+const allProducts: (Product & { category: string })[] = [
+  // Моды X5
+  { id: '1', category: 'Моды X5', name: 'Вандал про', price: 1000, oldPrice: 2198, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/bd1973b6-d9d5-48bd-b51a-68824f00c18f.jpg', currency: 'gems' },
+  { id: '2', category: 'Моды X5', name: 'Вандал', price: 600, oldPrice: 1299, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/bd1973b6-d9d5-48bd-b51a-68824f00c18f.jpg', currency: 'gems' },
+  { id: '3', category: 'Моды X5', name: 'Жёсткий', price: 340, oldPrice: 699, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/bd1973b6-d9d5-48bd-b51a-68824f00c18f.jpg', currency: 'gems' },
+  { id: '4', category: 'Моды X5', name: 'Шкет', price: 90, oldPrice: 205, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/bd1973b6-d9d5-48bd-b51a-68824f00c18f.jpg', currency: 'gems' },
+  { id: '5', category: 'Моды X5', name: 'Все киты', price: 600, oldPrice: 1299, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '6', category: 'Моды X5', name: 'Неуязвимый', price: 69, oldPrice: 138, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/bd1973b6-d9d5-48bd-b51a-68824f00c18f.jpg', currency: 'gems' },
+  { id: '7', category: 'Моды X5', name: 'Пропуск очереди', price: 49, oldPrice: 98, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/c5364bf0-a676-41a2-9da3-23bea2c9dd46.jpg', currency: 'gems' },
+  { id: '8', category: 'Моды X5', name: 'Все изучения', price: 99, oldPrice: 198, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '9', category: 'Моды X5', name: 'Неломайка', price: 49, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '10', category: 'Моды X5', name: 'Бесконечные патроны...', price: 99, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/715a8f06-add6-4f24-b72b-3dbf64e27594.jpg', currency: 'gems' },
+  // Предметы
+  { id: '11', category: 'Предметы', name: 'Портативная турель', price: 35, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/9985eb6f-5bd2-4060-9c20-6e97c8fad1bc.jpg', currency: 'gems' },
+  { id: '12', category: 'Предметы', name: 'Миникоптер', price: 99, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/cd139a5a-5de0-40e9-95c3-38678876b0c1.jpg', currency: 'gems' },
+  { id: '13', category: 'Предметы', name: 'x10 рейты', price: 99, oldPrice: 198, discount: 50, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '14', category: 'Предметы', name: 'Все ящики', price: 9, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/a32b7e54-ce29-4acb-b4da-8beb6161f790.jpg', currency: 'gems' },
+  { id: '15', category: 'Предметы', name: 'Гранаты', price: 19, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '16', category: 'Предметы', name: 'Рюкзак 96 слотов', price: 39, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '17', category: 'Предметы', name: 'Генетика', price: 39, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '18', category: 'Предметы', name: 'Верстаки', price: 9, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '19', category: 'Предметы', name: 'Транспортный вертол...', price: 15, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/cd139a5a-5de0-40e9-95c3-38678876b0c1.jpg', currency: 'gems' },
+  { id: '20', category: 'Предметы', name: 'Переработчик', price: 9, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  // Оружие
+  { id: '21', category: 'Оружие', name: 'Ракетница', price: 29, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/715a8f06-add6-4f24-b72b-3dbf64e27594.jpg', currency: 'gems' },
+  { id: '22', category: 'Оружие', name: 'Ракета', price: 59, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/715a8f06-add6-4f24-b72b-3dbf64e27594.jpg', currency: 'gems' },
+  { id: '23', category: 'Оружие', name: 'Скоростная ракета', price: 59, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/715a8f06-add6-4f24-b72b-3dbf64e27594.jpg', currency: 'gems' },
+  { id: '24', category: 'Оружие', name: 'Многозарядный грана...', price: 19, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '25', category: 'Оружие', name: '40мм Фугасная граната', price: 49, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '26', category: 'Оружие', name: 'ПЗРК', price: 9, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/715a8f06-add6-4f24-b72b-3dbf64e27594.jpg', currency: 'gems' },
+  { id: '27', category: 'Оружие', name: 'C4', price: 39, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '28', category: 'Оружие', name: 'Автоматическая Турель', price: 69, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/9985eb6f-5bd2-4060-9c20-6e97c8fad1bc.jpg', currency: 'gems' },
+  // Расходники
+  { id: '29', category: 'Расходники', name: 'Пироги', price: 5, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '30', category: 'Расходники', name: 'Бобовая граната', price: 15, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '31', category: 'Расходники', name: 'Граната F1', price: 10, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/e0ae431d-5a04-4b91-b321-71dc1cb92031.jpg', currency: 'gems' },
+  { id: '32', category: 'Расходники', name: 'Дизель', price: 59, image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
+  { id: '33', category: 'Расходники', name: 'Топливо', price: 19, pricePrefix: 'от', image: 'https://cdn.poehali.dev/projects/52cce8a2-a74d-44e5-aedc-a462581c2690/files/1095ec28-d773-4c4f-a9fd-c02937971343.jpg', currency: 'gems' },
 ]
 
 const navLinks = [
-  { label: 'Главная', href: '/' },
-  { label: 'Магазин', href: '/store', active: true },
-  { label: 'Правила', href: '#' },
-  { label: 'Discord', href: '#' },
+  { label: 'Магазин', href: '/store', icon: 'ShoppingCart', active: true },
+  { label: 'Сервера', href: '#', icon: 'Server' },
+  { label: 'Помощь', href: '#', icon: 'HelpCircle' },
+  { label: 'Бан-лист', href: '#', icon: 'Ban' },
 ]
 
 export default function Store() {
-  const [selected, setSelected] = useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = useState('Моды X5')
+  const [filterOpen, setFilterOpen] = useState(false)
+
+  const filtered = allProducts.filter(p => p.category === activeCategory)
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#0a0500', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
-      {/* HEADER */}
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: '#141414', color: '#fff', fontFamily: "'Inter', sans-serif" }}
+    >
+      {/* STICKY HEADER */}
       <header
-        className="sticky top-0 z-50 border-b"
-        style={{
-          backgroundColor: 'rgba(10, 5, 0, 0.95)',
-          borderColor: '#2a1a0a',
-          backdropFilter: 'blur(12px)',
-        }}
+        className="sticky top-0 z-50 flex items-center justify-center px-6 h-14 border-b"
+        style={{ backgroundColor: 'rgba(20,20,20,0.96)', borderColor: '#2a2a2a', backdropFilter: 'blur(10px)' }}
       >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-1 w-full max-w-5xl">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
+          <a href="/" className="flex items-center mr-4 shrink-0">
             <div
-              className="w-8 h-8 rounded flex items-center justify-center"
-              style={{ backgroundColor: '#FF4D00' }}
+              className="w-9 h-9 rounded-lg flex items-center justify-center relative"
+              style={{ backgroundColor: '#1e293b' }}
             >
-              <Icon name="Flame" size={18} className="text-white" />
+              <Icon name="Flame" size={18} style={{ color: '#FF4D00' }} />
+              <span
+                className="absolute -bottom-1 -right-1 text-[9px] font-bold px-1 rounded"
+                style={{ backgroundColor: '#22c55e', color: '#000' }}
+              >
+                254
+              </span>
             </div>
-            <span className="font-bold text-lg tracking-widest uppercase" style={{ color: '#FF4D00' }}>
-              RUST<span className="text-white">SERVER</span>
-            </span>
           </a>
 
-          {/* Nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
+          {/* Nav links */}
+          <nav className="flex items-center gap-1 flex-1">
+            {navLinks.map(link => (
               <a
                 key={link.label}
                 href={link.href}
-                className="px-4 py-2 rounded text-sm font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors"
                 style={{
-                  color: link.active ? '#FF4D00' : '#9ca3af',
-                  backgroundColor: link.active ? 'rgba(255, 77, 0, 0.1)' : 'transparent',
+                  color: link.active ? '#fff' : '#6b7280',
+                  backgroundColor: link.active ? '#1f2937' : 'transparent',
                 }}
               >
+                <Icon name={link.icon} size={14} />
                 {link.label}
               </a>
             ))}
           </nav>
 
-          {/* Right */}
-          <div className="flex items-center gap-3">
+          {/* Right side */}
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-sm" style={{ color: '#6b7280' }}>0</span>
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium"
-              style={{ backgroundColor: 'rgba(74, 222, 128, 0.1)', color: '#4ade80' }}
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: '#374151' }}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Онлайн: 142 / 200
+              <Icon name="User" size={16} style={{ color: '#9ca3af' }} />
             </div>
-            <Button
-              size="sm"
-              className="font-bold uppercase tracking-wider"
-              style={{ backgroundColor: '#FF4D00', color: '#fff', border: 'none' }}
-            >
-              Подключиться
-            </Button>
           </div>
         </div>
       </header>
 
-      {/* HERO BANNER */}
-      <div
-        className="relative py-16 px-6 text-center overflow-hidden"
-        style={{
-          background: 'linear-gradient(180deg, rgba(255,77,0,0.12) 0%, rgba(10,5,0,0) 100%)',
-          borderBottom: '1px solid #2a1a0a',
-        }}
-      >
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(255,77,0,0.15) 0%, transparent 70%)'
-        }} />
-        <p className="text-xs uppercase tracking-[0.3em] mb-3" style={{ color: '#FF4D00' }}>
-          Официальный магазин привилегий
-        </p>
-        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
-          Стань <span style={{ color: '#FF4D00' }}>сильнейшим</span>
-        </h1>
-        <p className="text-base max-w-xl mx-auto" style={{ color: '#6b7280' }}>
-          Привилегии не дают преимущества в бою — они дают комфорт и статус. Честная игра гарантирована.
-        </p>
-      </div>
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        {/* HERO BANNER */}
+        <div
+          className="relative rounded-2xl overflow-hidden mb-8"
+          style={{
+            background: 'linear-gradient(135deg, #0f2a2a 0%, #0a1f2e 50%, #0d1b2e 100%)',
+            minHeight: 260,
+          }}
+        >
+          {/* Teal glow */}
+          <div
+            className="absolute right-0 top-0 bottom-0 w-2/3 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse at 70% 50%, rgba(20,184,166,0.25) 0%, transparent 70%)',
+            }}
+          />
 
-      {/* CARDS */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {privileges.map((priv) => (
+          <div className="relative z-10 p-8 md:p-10 flex items-center justify-between">
+            <div className="max-w-xs">
+              <h2 className="text-3xl font-bold mb-3">
+                🔥 Бонусные киты
+              </h2>
+              <p className="text-sm mb-6" style={{ color: '#94a3b8', lineHeight: 1.6 }}>
+                Хочешь больше ресурсов? Привяжи наши соцсети и открой доступ к бонусным китам!
+              </p>
+              <button
+                className="px-6 py-2.5 rounded-lg font-semibold text-sm transition-all hover:opacity-90"
+                style={{ backgroundColor: '#14b8a6', color: '#fff' }}
+              >
+                Подробнее ℹ
+              </button>
+            </div>
+
+            {/* Right side icons */}
+            <div className="hidden md:flex items-center gap-4 mr-8">
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                style={{ backgroundColor: '#229ED9', opacity: 0.9 }}
+              >
+                <Icon name="Send" size={28} style={{ color: '#fff' }} />
+              </div>
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                style={{ backgroundColor: '#5865F2', opacity: 0.9 }}
+              >
+                <Icon name="MessageCircle" size={28} style={{ color: '#fff' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Dots indicator */}
+          <div className="absolute bottom-4 right-4 flex gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#14b8a6' }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#374151' }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#374151' }} />
+          </div>
+        </div>
+
+        {/* CATEGORY TABS + FILTER */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-1 flex-wrap">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className="px-4 py-1.5 rounded-md text-sm font-medium transition-all"
+                style={{
+                  backgroundColor: activeCategory === cat ? '#fff' : 'transparent',
+                  color: activeCategory === cat ? '#000' : '#6b7280',
+                  border: activeCategory === cat ? 'none' : '1px solid #2a2a2a',
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setFilterOpen(!filterOpen)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors"
+            style={{ color: '#9ca3af', border: '1px solid #2a2a2a', backgroundColor: 'transparent' }}
+          >
+            <Icon name="SlidersHorizontal" size={14} />
+            Все
+            <Icon name="ChevronDown" size={14} />
+          </button>
+        </div>
+
+        {/* PRODUCTS GRID */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0 border-l border-t" style={{ borderColor: '#2a2a2a' }}>
+          {filtered.map(product => (
             <div
-              key={priv.id}
-              onClick={() => setSelected(priv.id === selected ? null : priv.id)}
-              className="relative rounded-xl cursor-pointer transition-all duration-300 flex flex-col"
-              style={{
-                backgroundColor: '#120c04',
-                border: `1px solid ${selected === priv.id ? priv.color : '#2a1a0a'}`,
-                boxShadow: selected === priv.id ? `0 0 30px ${priv.glowColor}` : 'none',
-                transform: selected === priv.id ? 'translateY(-4px)' : 'none',
-              }}
+              key={product.id}
+              className="relative cursor-pointer group border-r border-b transition-all"
+              style={{ borderColor: '#2a2a2a', backgroundColor: '#141414' }}
             >
-              {/* Badge */}
-              {priv.badge && (
+              {/* Hover overlay */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+              />
+
+              {/* Discount badge */}
+              {product.discount && (
                 <div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"
-                  style={{ backgroundColor: priv.color, color: '#000' }}
+                  className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
+                  style={{ backgroundColor: '#16a34a', color: '#fff' }}
                 >
-                  {priv.badge}
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                  {product.discount}%
                 </div>
               )}
 
-              {/* Top */}
-              <div className="p-6 pb-4 flex flex-col items-center text-center border-b" style={{ borderColor: '#2a1a0a' }}>
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: `${priv.color}22`, boxShadow: `0 0 20px ${priv.glowColor}` }}
-                >
-                  <Icon name={priv.icon} size={26} style={{ color: priv.color }} />
-                </div>
-                <h3
-                  className="text-2xl font-black tracking-widest uppercase mb-3"
-                  style={{ color: priv.color }}
-                >
-                  {priv.name}
-                </h3>
-                <div className="flex items-baseline gap-2 justify-center">
-                  {priv.oldPrice && (
-                    <span className="text-sm line-through" style={{ color: '#4b5563' }}>
-                      {priv.oldPrice} ₽
+              {/* Image area */}
+              <div
+                className="flex items-center justify-center p-4"
+                style={{ aspectRatio: '1/1', backgroundColor: '#1a1a1a' }}
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain transition-transform group-hover:scale-105"
+                  style={{ maxWidth: 120, maxHeight: 120 }}
+                />
+              </div>
+
+              {/* Info */}
+              <div className="p-3 pt-2">
+                <p className="text-sm font-medium mb-1 truncate" style={{ color: '#e5e7eb' }}>
+                  {product.name}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {product.oldPrice && (
+                    <span className="text-xs line-through" style={{ color: '#4b5563' }}>
+                      {product.oldPrice}
                     </span>
                   )}
-                  <span className="text-3xl font-black" style={{ color: '#fff' }}>
-                    {priv.price} ₽
+                  <span className="text-sm font-bold flex items-center gap-1" style={{ color: '#e5e7eb' }}>
+                    {product.pricePrefix && (
+                      <span className="font-normal text-xs" style={{ color: '#6b7280' }}>{product.pricePrefix}</span>
+                    )}
+                    {product.price}
+                    <span
+                      className="w-3.5 h-3.5 rounded-full inline-flex items-center justify-center text-[8px] font-bold ml-0.5"
+                      style={{ backgroundColor: '#6366f1', color: '#fff' }}
+                    >
+                      ◆
+                    </span>
                   </span>
                 </div>
               </div>
-
-              {/* Features */}
-              <div className="p-6 flex-1 flex flex-col">
-                <ul className="space-y-2.5 flex-1">
-                  {priv.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm" style={{ color: '#d1d5db' }}>
-                      <Icon name="Check" size={14} className="mt-0.5 shrink-0" style={{ color: priv.color }} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  className="mt-6 w-full py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-all duration-200"
-                  style={{
-                    backgroundColor: selected === priv.id ? priv.color : 'transparent',
-                    color: selected === priv.id ? '#000' : priv.color,
-                    border: `2px solid ${priv.color}`,
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = priv.color
-                    ;(e.currentTarget as HTMLButtonElement).style.color = '#000'
-                  }}
-                  onMouseLeave={e => {
-                    if (selected !== priv.id) {
-                      (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'
-                      ;(e.currentTarget as HTMLButtonElement).style.color = priv.color
-                    }
-                  }}
-                >
-                  Купить {priv.name}
-                </button>
-              </div>
             </div>
           ))}
         </div>
-
-        {/* INFO STRIP */}
-        <div
-          className="mt-12 rounded-xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center"
-          style={{ backgroundColor: '#120c04', border: '1px solid #2a1a0a' }}
-        >
-          {[
-            { icon: 'Zap', label: 'Мгновенная выдача', desc: 'Привилегия активируется сразу после оплаты', color: '#f59e0b' },
-            { icon: 'RefreshCw', label: 'Сохраняется после вайпа', desc: 'Привилегия не сгорает при обнулении сервера', color: '#60a5fa' },
-            { icon: 'HeadphonesIcon', label: 'Поддержка 24/7', desc: 'Помогаем в Discord в любое время суток', color: '#4ade80' },
-          ].map((item) => (
-            <div key={item.icon} className="flex flex-col items-center gap-2">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center mb-1"
-                style={{ backgroundColor: `${item.color}22` }}
-              >
-                <Icon name={item.icon} size={18} style={{ color: item.color }} />
-              </div>
-              <p className="font-semibold text-sm text-white">{item.label}</p>
-              <p className="text-xs" style={{ color: '#6b7280' }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="border-t mt-8 py-8 text-center text-xs" style={{ borderColor: '#2a1a0a', color: '#4b5563' }}>
-        © 2024 RUST SERVER — Все права защищены. Привилегии не влияют на баланс игры.
-      </footer>
+      </div>
     </div>
   )
 }
